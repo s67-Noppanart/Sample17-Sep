@@ -34,6 +34,19 @@ void draw() {
     text("Press any key to start", width / 2, 2 * (height / 3));
   } else {
     draw_grid();
+    int i = 0;
+    while (i < rows) {
+      int j = 0;
+      while (j < cols) {
+        if (matchedDraws[i][j]) {
+            int w = cellWidth * j;
+            int h = cellHeight * i;
+            draw_lines(w + 10, h + 10, grid[i][j]);
+        }
+        j++;
+      }  
+    i++;
+    }
     if (clickedCol != -1 && clickedRow != -1 && !matchedDraws[clickedRow][clickedCol]) {
       int w = cellWidth * clickedCol;
       int h = cellHeight * clickedRow;
@@ -53,13 +66,11 @@ void draw() {
           MatchDelay = 0;
         }
       }
-
       if (MatchDelay == 0) {
         resetGame();
       }
     }
   }
-
   victory();
 }
 
@@ -80,6 +91,7 @@ void draw_grid() {
   }
 }
 
+
 void draw_lines(int x, int y, int n){
     int i = 0;
     while (i < n) {     
@@ -93,20 +105,20 @@ void mouseClicked() {
   if (drawCount < maxDraw && isStarted) {
     clickedCol = mouseX / cellWidth;
     clickedRow = mouseY / cellHeight;
+    
     if (!matchedDraws[clickedRow][clickedCol]) {
       if (drawCount == 0) {
-        // First selection
         firstDraw = grid[clickedRow][clickedCol];
         firstRow = clickedRow;
         firstCol = clickedCol;
       } else if (drawCount == 1) {
-        // Second selection
         secondDraw = grid[clickedRow][clickedCol];
         secondRow = clickedRow;
         secondCol = clickedCol;
       }
       drawCount++;
     }
+
     println("Clicked on (" + clickedRow + ", " + clickedCol + ") Draws: " + drawCount + " First: " + firstDraw + " Second: " + secondDraw + " Match: " + Match);
   }
 }
@@ -129,8 +141,6 @@ void resetGame() {
     matchedDraws[secondRow][secondCol] = true;
     Match++;
   }
-
-
   drawCount = 0;
   clickedCol = -1;
   clickedRow = -1;
@@ -140,6 +150,7 @@ void resetGame() {
   secondCol = -1;
   isMismatched = false;
 }
+
 
 void victory() {
   if (Match == MaxMatch) {
