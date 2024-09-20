@@ -4,52 +4,65 @@ int cols = grid[0].length;
 int cellWidth, cellHeight;
 int clickedCol = -1;
 int clickedRow = -1;
+int firstRow = -1, firstCol = -1;
+int secondRow = -1, secondCol = -1;
 int drawCount = 0;
 int maxDraw = 2;
 int firstDraw;
 int secondDraw;
 int MatchDelay = 0;
 int DelayMax = 50;
-
+boolean isStarted = false;
+boolean isMismatched = false;
+int Match = 0;
+int MaxMatch = (rows * cols) / 2;
+boolean[][] matchedDraws = new boolean[rows][cols];
 
 void setup() {
   size(500, 500);
   strokeWeight(10);
-  background(255);
+  background(210);
   cellWidth = width / cols;
   cellHeight = height / rows;
-  
 }
 
-
-void draw(){
-  draw_grid();
-  // 2D array of sample values
-  if (clickedCol != -1 && clickedRow != -1){
-    int w = cellWidth * clickedCol;
-    int h = cellHeight * clickedRow;
-    draw_lines(w + 10, h + 10, grid[clickedRow][clickedCol]);
-  } 
-  if (drawCount == maxDraw) {
-    if(firstDraw == secondDraw){
-      println("Matched");
+void draw() {
+  if (!isStarted) {
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    text("Memory game", width / 2, height / 3);
+    text("Press any key to start", width / 2, 2 * (height / 3));
   } else {
-      if (MatchDelay < DelayMax){
-      println("no matched");
-      MatchDelay++;
+    draw_grid();
+    if (clickedCol != -1 && clickedRow != -1 && !matchedDraws[clickedRow][clickedCol]) {
+      int w = cellWidth * clickedCol;
+      int h = cellHeight * clickedRow;
+      draw_lines(w + 10, h + 10, grid[clickedRow][clickedCol]);
+    }
+    if (drawCount == maxDraw) {
+      if (firstDraw == secondDraw) {
+        // Mark the two selected cells as matched
+        matchedDraws[firstRow][firstCol] = true;
+        matchedDraws[secondRow][secondCol] = true;
       } else {
-      background(255);
-      MatchDelay = 0;
+        if (MatchDelay < DelayMax) {
+          MatchDelay++;
+        } else {
+          isMismatched = true;
+          background(210);
+          MatchDelay = 0;
+        }
+      }
+
+      if (MatchDelay == 0) {
+        resetGame();
+      }
+    }
   }
-  }
-  if (MatchDelay == 0){
-    drawCount = 0;
-    secondDraw = 0;
-    clickedCol = -1;
-    clickedRow = -1;
-  }
-  }
+
+  victory();
 }
+
 
 
 void draw_grid() {
@@ -67,7 +80,6 @@ void draw_grid() {
   }
 }
 
-
 void draw_lines(int x, int y, int n){
     int i = 0;
     while (i < n) {     
@@ -77,16 +89,64 @@ void draw_lines(int x, int y, int n){
 }
 
 
-void mouseClicked(){
-  if (drawCount < maxDraw) {
+void mouseClicked() {
+  if (drawCount < maxDraw && isStarted) {
     clickedCol = mouseX / cellWidth;
     clickedRow = mouseY / cellHeight;
-    if (drawCount == 0){
-      firstDraw = grid[clickedRow][clickedCol];
-    } else if (drawCount == 1){
-      secondDraw = grid[clickedRow][clickedCol]; 
+    if (!matchedDraws[clickedRow][clickedCol]) {
+      if (drawCount == 0) {
+        // First selection
+        firstDraw = grid[clickedRow][clickedCol];
+        firstRow = clickedRow;
+        firstCol = clickedCol;
+      } else if (drawCount == 1) {
+        // Second selection
+        secondDraw = grid[clickedRow][clickedCol];
+        secondRow = clickedRow;
+        secondCol = clickedCol;
+      }
+      drawCount++;
     }
-    drawCount++;
-  println("Clicked on " + "(" + clickedRow + ",", clickedCol + ") " + "Draws :",drawCount, firstDraw, secondDraw);
-  } 
+    println("Clicked on (" + clickedRow + ", " + clickedCol + ") Draws: " + drawCount + " First: " + firstDraw + " Second: " + secondDraw + " Match: " + Match);
+  }
+}
+
+
+void keyPressed() {
+  if (!isStarted) {
+    isStarted = true;
+    background(210);
+  }
+}
+
+
+void resetGame() {
+  if (isMismatched) {
+    println("No match");
+  } else {
+    println("Matched!");
+    matchedDraws[firstRow][firstCol] = true;
+    matchedDraws[secondRow][secondCol] = true;
+    Match++;
+  }
+
+
+  drawCount = 0;
+  clickedCol = -1;
+  clickedRow = -1;
+  firstRow = -1;
+  firstCol = -1;
+  secondRow = -1;
+  secondCol = -1;
+  isMismatched = false;
+}
+
+void victory() {
+  if (Match == MaxMatch) {
+    background(210);
+    textSize(50);
+    textAlign(CENTER, CENTER);
+    text("You win!", width / 2, height / 2);
+    isStarted = false;
+  }
 }
