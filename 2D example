@@ -1,4 +1,4 @@
-int[][] grid = {{1, 1, 2, 2}, {3, 3, 4, 4}, {5, 5, 6, 6}};
+int[][] grid = {{1, 1, 2, 2}, {3, 3, 4, 4}, {5, 5, 6, 6}, {7, 7, 8, 8}};
 int rows = grid.length;
 int cols = grid[0].length;
 int cellWidth, cellHeight;
@@ -6,12 +6,9 @@ int clickedCol = -1;
 int clickedRow = -1;
 int firstRow = -1, firstCol = -1;
 int secondRow = -1, secondCol = -1;
-int drawCount = 0;
-int maxDraw = 2;
-int firstDraw;
-int secondDraw;
-int MatchDelay = 0;
-int DelayMax = 50;
+int drawCount = 0, maxDraw = 2;
+int firstDraw, secondDraw;
+int MatchDelay = 0, DelayMax = 50;
 boolean isStarted = false;
 boolean isMismatched = false;
 boolean isWin = false;
@@ -21,7 +18,7 @@ boolean[][] matchedDraws = new boolean[rows][cols];
 
 void setup() {
   size(500, 500);
-  strokeWeight(10);
+  strokeWeight(6);
   background(210);
   cellWidth = width / cols;
   cellHeight = height / rows;
@@ -42,7 +39,7 @@ void draw() {
         if (matchedDraws[i][j]) {
             int w = cellWidth * j;
             int h = cellHeight * i;
-            draw_lines(w + 10, h + 10, grid[i][j]);
+            draw_lines(w , h + 10, grid[i][j]);
         }
         j++;
       }  
@@ -80,6 +77,19 @@ void draw() {
 }
 
 
+void show_grid(){
+    int i = 0;
+    while (i < rows) {
+      int j = 0;
+      while (j < cols) {
+        int w = width / cols;
+        int h = height / rows;
+        draw_lines(w + 10, h + 10, grid[i][j]);
+        j++;
+      }
+      i++;
+    }  
+}
 
 void draw_grid() {
   int w = width / cols;
@@ -100,7 +110,7 @@ void draw_grid() {
 void draw_lines(int x, int y, int n){
     int i = 0;
     while (i < n) {     
-        line(x + 10 + (i * 20) , y, x + 10 + (i * 20), y + 40);
+        line(x + (i * 15) , y, x + (i * 15), y + 40);
         i++;
     }
 }
@@ -169,6 +179,7 @@ void victory() {
      isWin = true;
      Match = 0;
      background(210);
+     delay(2000);
      int i = 0;
      while (i < rows){
        int j = 0;
