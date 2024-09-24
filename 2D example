@@ -14,6 +14,7 @@ int MatchDelay = 0;
 int DelayMax = 50;
 boolean isStarted = false;
 boolean isMismatched = false;
+boolean isWin = false;
 int Match = 0;
 int MaxMatch = (rows * cols) / 2;
 boolean[][] matchedDraws = new boolean[rows][cols];
@@ -27,12 +28,12 @@ void setup() {
 }
 
 void draw() {
-  if (!isStarted) {
+  if (!isStarted && !isWin) {
     textSize(40);
     textAlign(CENTER, CENTER);
     text("Memory game", width / 2, height / 3);
     text("Press any key to start", width / 2, 2 * (height / 3));
-  } else {
+  } else if (isStarted && !isWin) {
     draw_grid();
     int i = 0;
     while (i < rows) {
@@ -72,6 +73,10 @@ void draw() {
     }
   }
   victory();
+  if (isWin){
+    text("You win", width / 2, height / 3);
+    text("Press any key to menu", width / 2, 2 * (height / 3));
+  }
 }
 
 
@@ -125,10 +130,16 @@ void mouseClicked() {
 
 
 void keyPressed() {
-  if (!isStarted) {
+  if(!isStarted){
     isStarted = true;
     background(210);
   }
+  if(isWin){
+    isWin = false;
+    isStarted = false;
+    background(210);
+  }
+  
 }
 
 
@@ -154,10 +165,17 @@ void resetGame() {
 
 void victory() {
   if (Match == MaxMatch) {
-    background(210);
-    textSize(50);
-    textAlign(CENTER, CENTER);
-    text("You win!", width / 2, height / 2);
-    isStarted = false;
+     isWin = true;
+     Match = 0;
+     background(210);
+     int i = 0;
+     while (i < rows){
+       int j = 0;
+       while (j < cols){
+         matchedDraws[i][j] = false;
+         j++;
+       }
+       i++;
+     }
   }
 }
